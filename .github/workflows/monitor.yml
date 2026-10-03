@@ -1,7 +1,6 @@
 name: MATCHi monitor
 
 on:
-  workflow_dispatch:
   schedule:
     - cron: "*/25 * * * *"
   workflow_dispatch:
