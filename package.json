@@ -13,9 +13,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/AlessandroGasperini/pingis-monitor/issues"
   },
-  "homepage": "https://github.com/AlessandroGasperini/pingis-monitor#readme"
+  "homepage": "https://github.com/AlessandroGasperini/pingis-monitor#readme",
+  "dependencies": {
+    "cheerio": "^1.2.0"
+  }
 }
