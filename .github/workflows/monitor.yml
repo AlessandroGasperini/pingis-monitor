@@ -2,7 +2,7 @@ name: MATCHi monitor
 
 on:
   schedule:
-    - cron: "*/25 * * * *"
+    - cron: "7,32,57 * * * *"
   workflow_dispatch:
 
 permissions:
