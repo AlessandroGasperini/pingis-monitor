@@ -70,7 +70,7 @@ if (newSlots.length > 0) {
   }
 
   const lines = [
-    "🏓 Nya tider du kanske är intresserad av!",
+    "🏓 BING BONG boka PING PONG!",
     "",
   ];
 
