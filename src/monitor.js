@@ -1,6 +1,8 @@
+cat > src/monitor.js <<'EOF'
 import { config } from "./config.js";
 import { getMonitoringDates } from "./dates.js";
 import { fetchFacilityAvailability } from "./matchi.js";
+import { sendTelegramMessage } from "./telegram.js";
 import { loadState, saveState, slotKey } from "./state.js";
 
 const dates = getMonitoringDates();
@@ -10,7 +12,6 @@ const previousKeys = new Set(previousState.availableSlots);
 
 const currentSlots = [];
 const currentKeys = new Set();
-let hadErrors = false;
 
 console.log(`Kontrollerar ${dates.length} datum...`);
 console.log("");
@@ -36,6 +37,7 @@ for (const facility of config.facilities) {
       }
     } catch (error) {
       console.error(`${date}: FEL — ${error.message}`);
+      process.exitCode = 1;
     }
   }
 
@@ -46,17 +48,34 @@ const newSlots = currentSlots.filter(
   (slot) => !previousKeys.has(slotKey(slot))
 );
 
+console.log(`Totalt lediga slots: ${currentSlots.length}`);
+console.log(`Nya slots: ${newSlots.length}`);
+
+if (newSlots.length > 0) {
+  const lines = [
+    "🏓 Nya tider på MATCHi",
+    "",
+  ];
+
+  for (const slot of newSlots) {
+    lines.push(
+      `${slot.facilityName}`,
+      `${slot.date} ${slot.time} — ${slot.court} — ${slot.duration}`,
+      ""
+    );
+  }
+
+console.log("Försöker skicka Telegram...");
+
+await sendTelegramMessage(lines.join("\n"));
+
+console.log("Telegram skickat.");
+}
+
 const state = {
   availableSlots: [...currentKeys].sort(),
 };
 
 await saveState(state);
 
-console.log(`Totalt lediga slots: ${currentSlots.length}`);
-console.log(`Nya slots: ${newSlots.length}`);
-
-for (const slot of newSlots) {
-  console.log(
-    `NY: ${slot.date} ${slot.time} — ${slot.court} — ${slot.duration}`
-  );
-}
+console.log("State sparad.");
