@@ -20,7 +20,7 @@ export const config = {
 
   monitoring: {
     daysAhead: 21,
-    weekdays: [1, 2, 3, 4, 6], // Monday-Thursday
+    weekdays: [1, 2, 3, 4, 6,], // Monday-Thursday
     startHour: 18,
     endHour: 20,
   },

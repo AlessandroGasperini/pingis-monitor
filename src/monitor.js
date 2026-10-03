@@ -1,4 +1,3 @@
-cat > src/monitor.js <<'EOF'
 import { config } from "./config.js";
 import { getMonitoringDates } from "./dates.js";
 import { fetchFacilityAvailability } from "./matchi.js";
@@ -52,24 +51,50 @@ console.log(`Totalt lediga slots: ${currentSlots.length}`);
 console.log(`Nya slots: ${newSlots.length}`);
 
 if (newSlots.length > 0) {
+  const grouped = new Map();
+
+  for (const slot of newSlots) {
+    const key = slot.facilityName;
+
+    if (!grouped.has(key)) {
+      grouped.set(key, new Map());
+    }
+
+    const dates = grouped.get(key);
+
+    if (!dates.has(slot.date)) {
+      dates.set(slot.date, new Set());
+    }
+
+    dates.get(slot.date).add(slot.time);
+  }
+
   const lines = [
-    "🏓 Nya tider på MATCHi",
+    "🏓 Nya tider du kanske är intresserad av!",
     "",
   ];
 
-  for (const slot of newSlots) {
-    lines.push(
-      `${slot.facilityName}`,
-      `${slot.date} ${slot.time} — ${slot.court} — ${slot.duration}`,
-      ""
-    );
+  for (const [facilityName, facilityDates] of grouped) {
+    lines.push(facilityName);
+
+    for (const [date, times] of facilityDates) {
+      const formattedDate = date.split("-").slice(1).join("/");
+
+      const sortedTimes = [...times].sort();
+
+      lines.push(
+        `${formattedDate}: ${sortedTimes.join(", ")}`
+      );
+    }
+
+    lines.push("");
   }
 
-console.log("Försöker skicka Telegram...");
+  console.log("Försöker skicka Telegram...");
 
-await sendTelegramMessage(lines.join("\n"));
+  await sendTelegramMessage(lines.join("\n"));
 
-console.log("Telegram skickat.");
+  console.log("Telegram skickat.");
 }
 
 const state = {
