@@ -6,6 +6,10 @@ export const config = {
       id: 2505,
       name: "TSK Malmen",
     },
+    {
+  id: 1931,
+  name: "Krickans Tennishall",
+},
   ],
 
   sport: 1,
