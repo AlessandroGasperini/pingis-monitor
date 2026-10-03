@@ -17,11 +17,18 @@ export async function fetchFacilityAvailability(facility, date) {
 
   const response = await fetch(MATCHI_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-      Accept: "text/html, */*; q=0.01",
-      "X-Requested-With": "XMLHttpRequest",
-    },
+headers: {
+  "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+  Accept: "*/*",
+  "Accept-Language": "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7",
+  "Cache-Control": "no-cache",
+  Pragma: "no-cache",
+  Origin: "https://www.matchi.se",
+  Referer: "https://www.matchi.se/book/index",
+  "User-Agent":
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
+  "X-Requested-With": "XMLHttpRequest",
+},
     body,
   });
 
