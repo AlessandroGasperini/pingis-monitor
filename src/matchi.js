@@ -25,11 +25,13 @@ export async function fetchFacilityAvailability(facility, date) {
     body,
   });
 
-  if (!response.ok) {
-    throw new Error(
-      `MATCHi HTTP ${response.status} ${response.statusText}`
-    );
-  }
+if (!response.ok) {
+  const errorBody = await response.text();
+
+  throw new Error(
+    `MATCHi HTTP ${response.status} ${response.statusText}: ${errorBody.slice(0, 500)}`
+  );
+}
 
   const html = await response.text();
   const $ = cheerio.load(html);
