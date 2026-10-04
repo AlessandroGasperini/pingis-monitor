@@ -2,7 +2,7 @@ name: MATCHi monitor
 
 on:
   schedule:
-    - cron: "7,32,57 * * * *"
+    - cron: "13,38,58 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   monitor:
-    runs-on: macos-15-intel
+    runs-on: macos-latest
 
     steps:
       - name: Checkout

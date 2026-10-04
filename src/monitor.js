@@ -69,14 +69,25 @@ if (newSlots.length > 0) {
     dates.get(slot.date).add(slot.time);
   }
 
-  const lines = [
-    "🏓 BING BONG boka PING PONG!",
-    "",
-  ];
+const messageStarters = [
+  "🏓 BING BONG boka PING PONG!",
+  "🎾 Angelo here! När ska vi lira?",
+  "🐂 Open stance with Fernanche!",
+  "🐌 Ska vi köra 5an???",
+  "🪥 Pablo e sugen!",
+];
+
+const randomStarter =
+  messageStarters[Math.floor(Math.random() * messageStarters.length)];
+
+const lines = [
+  randomStarter,
+  "",
+];
 
   for (const [facilityName, facilityDates] of grouped) {
-    lines.push(facilityName);
-
+    lines.push(`📍 ${facilityName.toUpperCase()}`);
+    
     for (const [date, times] of facilityDates) {
       const formattedDate = date.split("-").slice(1).join("/");
 
