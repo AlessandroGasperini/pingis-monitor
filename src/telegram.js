@@ -1,11 +1,11 @@
-const TELEGRAM_API = "https:" + "//api.telegram.org";
+const TELEGRAM_API = "https://api.telegram.org";
 
-export async function sendTelegramMessage(message) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
+export async function sendTelegramMessage(message, env) {
+  const token = env.TELEGRAM_BOT_TOKEN;
 
   const chatIds = [
-    process.env.TELEGRAM_CHAT_ID,
-    process.env.TELEGRAM_CHAT_ID_2,
+    env.TELEGRAM_CHAT_ID,
+    env.TELEGRAM_CHAT_ID_2,
   ].filter(Boolean);
 
   if (!token) {
@@ -31,13 +31,11 @@ export async function sendTelegramMessage(message) {
       }
     );
 
-    const data = await response.json();
+    if (!response.ok) {
+      const body = await response.text();
 
-    if (!response.ok || !data.ok) {
       throw new Error(
-        `Telegram API error för chat ${chatId}: ${
-          data.description || response.statusText
-        }`
+        `Telegram HTTP ${response.status}: ${body.slice(0, 500)}`
       );
     }
   }

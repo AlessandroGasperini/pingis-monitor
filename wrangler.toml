@@ -1,0 +1,10 @@
+name = "pingis-monitor"
+main = "src/worker.js"
+compatibility_date = "2026-10-04"
+
+[triggers]
+crons = ["*/20 * * * *"]
+
+[[kv_namespaces]]
+binding = "MONITOR_STATE"
+id = "5345bc01a88749239a02a0744280f71c"
