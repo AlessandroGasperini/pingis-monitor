@@ -11,7 +11,7 @@ export async function fetchFacilityAvailability(facility, date) {
     outdoors: config.search.outdoors,
     sport: String(config.sport),
     date,
-    q: facility.name,
+    q: facility.matchiName || facility.name,
     hasCamera: config.search.hasCamera,
   });
 
@@ -41,11 +41,12 @@ if (!response.ok) {
 }
 
   const html = await response.text();
+  console.log(html.slice(0, 5000));
   const $ = cheerio.load(html);
 
   const slots = [];
 
-  $(`div[id^="${facility.id}_"]`).each((_, element) => {
+  $("div[id]").each((_, element) => {
     const panel = $(element);
 
     const panelId = panel.attr("id");
@@ -62,14 +63,18 @@ if (!response.ok) {
       hour12: false,
     }).format(new Date(timestamp));
 
-    const [hour] = time.split(":").map(Number);
+const [hour] = time.split(":").map(Number);
 
-    if (
-      hour < config.monitoring.startHour ||
-      hour > config.monitoring.endHour
-    ) {
-      return;
-    }
+const weekday = new Date(`${date}T12:00:00Z`).getUTCDay();
+const hours = config.monitoring.hoursByWeekday[weekday];
+
+if (!hours) {
+  return;
+}
+
+if (hour < hours.start || hour > hours.end) {
+  return;
+}
 
     panel.find("tr").each((_, row) => {
       const cells = $(row).find("td");

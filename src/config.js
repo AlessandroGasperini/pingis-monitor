@@ -8,7 +8,7 @@ export const config = {
     },
     {
   id: 1931,
-  name: "Krickans Tennishall",
+  name: "Stockholms Tennishall & Stockholms TK",
 },
   ],
 
@@ -22,10 +22,14 @@ export const config = {
     hasCamera: "",
   },
 
-  monitoring: {
-    daysAhead: 21,
-    weekdays: [1, 2, 3, 4], // Monday-Thursday
-    startHour: 18,
-    endHour: 20,
+ monitoring: {
+   daysAhead: 21,
+   weekdays: [1, 2, 3, 4], // Mån–tors
+   hoursByWeekday: {
+    1: { start: 18, end: 21 }, // Måndag
+    2: { start: 18, end: 20 }, // Tisdag
+    3: { start: 18, end: 21 }, // Onsdag
+    4: { start: 18, end: 20 }, // Torsdag
   },
+},
 };
