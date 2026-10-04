@@ -3,7 +3,7 @@ main = "src/worker.js"
 compatibility_date = "2026-10-04"
 
 [triggers]
-crons = ["*/20 * * * *"]
+crons = ["*/15 * * * *"]
 
 [[kv_namespaces]]
 binding = "MONITOR_STATE"
