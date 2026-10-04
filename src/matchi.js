@@ -41,7 +41,6 @@ if (!response.ok) {
 }
 
   const html = await response.text();
-  console.log(html.slice(0, 5000));
   const $ = cheerio.load(html);
 
   const slots = [];
