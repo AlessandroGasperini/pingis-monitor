@@ -146,12 +146,12 @@ async function runMonitor(env) {
     }
 
     const messageStarters = [
-      "🏓 BING BONG boka PING PONG!",
-      "🏓 Hallå där! Det finns nya tider!",
-      "🏓 Pingis-alert! Någon har släppt tider!",
-      "🏓 Dags att slå till — nya tider finns!",
-      "🏓 BREAKING: pingistider har dykt upp!",
-    ];
+  "🏓 BING BONG boka PING PONG!",
+  "🎾 Angelo here! När ska vi lira?",
+  "🐂 Open stance with Fernanche!",
+  "🐌 Ska vi köra 5an???",
+  "🪥 Pablo e sugen!",
+];
 
     const randomStarter =
       messageStarters[
