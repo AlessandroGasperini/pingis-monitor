@@ -146,11 +146,12 @@ async function runMonitor(env) {
     }
 
     const messageStarters = [
-  "🏓 BING BONG boka PING PONG!",
-  "🎾 Angelo here! När ska vi lira?",
   "🐂 Open stance with Fernanche!",
-  "🐌 Ska vi köra 5an???",
-  "🪥 Pablo e sugen!",
+  "🎾 Yo Angelo här! När lirar vi?",
+  "🏓 PLING PLONG PING PONG!",
+  "🐌 5an ikväll?",
+  "🪥 Pablo undrar om ni är lediga?",
+  "🎤 Don't call me EMINEM, call me EMINEM."
 ];
 
     const randomStarter =
