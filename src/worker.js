@@ -4,6 +4,68 @@ import { fetchFacilityAvailability } from "./matchi.js";
 import { sendTelegramMessage } from "./telegram.js";
 import { slotKey } from "./state.js";
 
+
+
+async function handleTelegramWebhook(request, env) {
+  const secret = request.headers.get("X-Telegram-Bot-Api-Secret-Token");
+
+  if (!secret || secret !== env.TELEGRAM_WEBHOOK_SECRET) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const update = await request.json();
+  const message = update.message;
+  if (!message?.text || !message.chat?.id) {
+    return new Response("OK");
+  }
+
+  const allowedChatId = String(env.TELEGRAM_CHAT_ID);
+  if (String(message.chat.id) !== allowedChatId) {
+    return new Response("Forbidden", { status: 403 });
+  }
+
+  const command = message.text.trim().toUpperCase();
+  let reply;
+
+  if (command === "STOP") {
+    await env.MONITOR_STATE.put("paused", "true");
+    reply = "⏸️ Monitorn är pausad.";
+  } else if (command === "START") {
+    await env.MONITOR_STATE.put("paused", "false");
+    reply = "▶️ Monitorn är igång igen.";
+  } else if (command === "STATUS") {
+    const paused = (await env.MONITOR_STATE.get("paused")) === "true";
+    reply = paused
+      ? "⏸️ Status: PAUSED"
+      : "▶️ Status: RUNNING";
+  } else {
+    reply = "Okänt kommando. Använd STOP, START eller STATUS.";
+  }
+
+  await sendTelegramMessageToChat(
+    String(message.chat.id),
+    reply,
+    env
+  );
+
+  return new Response("OK");
+}
+
+async function sendTelegramMessageToChat(chatId, text, env) {
+  const response = await fetch(
+    `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Telegram svarade HTTP ${response.status}`);
+  }
+}
+
 async function loadState(env) {
   const raw = await env.MONITOR_STATE.get("state");
 
@@ -43,6 +105,14 @@ function getDateFromSlotKey(key) {
 }
 
 async function runMonitor(env) {
+
+  const paused = (await env.MONITOR_STATE.get("paused")) === "true";
+
+  if (paused) {
+    console.log("Monitorn är pausad. Hoppar över körningen.");
+    return;
+  }
+
   const allDates = getMonitoringDates();
 
   const {
@@ -124,8 +194,12 @@ async function runMonitor(env) {
   if (newSlots.length > 0) {
     const grouped = new Map();
 
-    for (const slot of newSlots) {
-      const key = slot.facilityName;
+for (const slot of newSlots) {
+  const facility = config.facilities.find(
+    (item) => item.id === slot.facilityId
+  );
+
+  const key = facility?.nickname ?? slot.facilityName;
 
       if (!grouped.has(key)) {
         grouped.set(key, new Map());
@@ -236,13 +310,20 @@ async function runMonitor(env) {
   );
 }
 
+
 export default {
   async fetch(request, env) {
-    await runMonitor(env);
+    const url = new URL(request.url);
 
-    return new Response(
-      "Monitor körd!"
-    );
+    if (url.pathname === "/telegram-webhook" && request.method === "POST") {
+      return handleTelegramWebhook(request, env);
+    }
+
+    if (url.pathname === "/") {
+      return new Response("🏓 Pingis-monitor fungerar!");
+    }
+
+    return new Response("Not found", { status: 404 });
   },
 
   async scheduled(event, env, ctx) {
