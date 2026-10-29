@@ -1,3 +1,4 @@
+
 const TELEGRAM_API = "https://api.telegram.org";
 
 export async function sendTelegramMessage(message, env) {
@@ -27,6 +28,7 @@ export async function sendTelegramMessage(message, env) {
         body: JSON.stringify({
           chat_id: chatId,
           text: message,
+          disable_web_page_preview: true,
         }),
       }
     );

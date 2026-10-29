@@ -50,63 +50,97 @@ const newSlots = currentSlots.filter(
 console.log(`Totalt lediga slots: ${currentSlots.length}`);
 console.log(`Nya slots: ${newSlots.length}`);
 
+
 if (newSlots.length > 0) {
   const grouped = new Map();
 
   for (const slot of newSlots) {
-    const key = slot.facilityName;
+    const facility = config.facilities.find(
+      (item) => item.id === slot.facilityId
+    );
 
-    if (!grouped.has(key)) {
-      grouped.set(key, new Map());
+    const facilityName =
+      facility?.nickname ?? slot.facilityName;
+
+    if (!grouped.has(facilityName)) {
+      grouped.set(facilityName, new Map());
     }
 
-    const dates = grouped.get(key);
+    const facilityDates = grouped.get(facilityName);
 
-    if (!dates.has(slot.date)) {
-      dates.set(slot.date, new Set());
+    if (!facilityDates.has(slot.date)) {
+      facilityDates.set(slot.date, new Map());
     }
 
-    dates.get(slot.date).add(slot.time);
+    const dateTimes = facilityDates.get(slot.date);
+
+   // Visa varje klockslag en gång, utan länkar.
+if (!dateTimes.has(slot.time)) {
+  dateTimes.set(slot.time, true);
+}
   }
 
-const messageStarters = [
-  "🏓 BING BONG boka PING PONG!",
-  "🎾 Angelo here! När ska vi lira?",
-  "🐂 Open stance with Fernanche!",
-  "🐌 Ska vi köra 5an???",
-  "🪥 Pablo e sugen!",
-];
+  const messageStarters = [
+    "🐂 Open stance with Fernanche!",
+    "🎾 Yo Angelo här! När lirar vi?",
+    "🏓 Skippa gym kom pingis!",
+    "🐌 5an ikväll?",
+    "🪥 Pablo vill lira?",
+    "🎤 Call me EMINEM... but don't call me EMINEM!"
+  ];
 
-const randomStarter =
-  messageStarters[Math.floor(Math.random() * messageStarters.length)];
+  const randomStarter =
+    messageStarters[
+      Math.floor(Math.random() * messageStarters.length)
+    ];
 
-const lines = [
-  randomStarter,
-  "",
-];
+  const weekdayFormatter = new Intl.DateTimeFormat("sv-SE", {
+    weekday: "long",
+    timeZone: "UTC",
+  });
+
+  const lines = [randomStarter, ""];
 
   for (const [facilityName, facilityDates] of grouped) {
-    lines.push(`📍 ${facilityName.toUpperCase()}`);
-    
-    for (const [date, times] of facilityDates) {
-      const formattedDate = date.split("-").slice(1).join("/");
+lines.push(`📍 ${facilityName.toUpperCase()}`);
+    const sortedDates = [...facilityDates.entries()].sort(
+      ([dateA], [dateB]) => dateA.localeCompare(dateB)
+    );
 
-      const sortedTimes = [...times].sort();
+    for (const [date, dateTimes] of sortedDates) {
+      const dateObject = new Date(`${date}T12:00:00Z`);
+
+      const weekday = weekdayFormatter
+        .format(dateObject);
+
+      const [year, month, day] = date.split("-");
+
+      const formattedDate = `${day}/${month}`;
+
+      const sortedTimes = [...dateTimes.entries()].sort(
+        ([timeA], [timeB]) => timeA.localeCompare(timeB)
+      );
+
+      const times = sortedTimes.map(([time]) => time);
+
+      const capitalizedWeekday =
+        weekday.charAt(0).toUpperCase() + weekday.slice(1);
 
       lines.push(
-        `${formattedDate}: ${sortedTimes.join(", ")}`
+        `${capitalizedWeekday} (${formattedDate}): ${times.join(", ")}`
       );
     }
 
     lines.push("");
   }
 
-  console.log("Försöker skicka Telegram...");
+  console.log("Skickar Telegram...");
 
-  await sendTelegramMessage(lines.join("\n"));
+  await sendTelegramMessage(lines.join("\n"), env);
 
   console.log("Telegram skickat.");
 }
+
 
 const state = {
   availableSlots: [...currentKeys].sort(),

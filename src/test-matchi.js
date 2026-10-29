@@ -1,9 +1,9 @@
 import { fetchFacilityAvailability } from "./matchi.js";
 import { config } from "./config.js";
 
-const facility = config.facilities[0];
+const facility = config.facilities[1];
 
-const date = "2026-10-06";
+const date = "2026-11-05";
 
 try {
   const slots = await fetchFacilityAvailability(facility, date);

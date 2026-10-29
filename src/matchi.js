@@ -41,7 +41,17 @@ if (!response.ok) {
 }
 
   const html = await response.text();
-  const $ = cheerio.load(html);
+const $ = cheerio.load(html);
+
+console.log(
+  "Alla MATCHi-länkar:",
+  $("a[href]")
+    .map((_, el) => $(el).attr("href"))
+    .get()
+    .filter(Boolean)
+    .filter((href) => !href.includes("slotIds="))
+    .slice(0, 50)
+);
 
   const slots = [];
 
@@ -110,16 +120,17 @@ if (hour < hours.start || hour > hours.end) {
         return;
       }
 
-      slots.push({
-        facilityId: facility.id,
-        facilityName: facility.name,
-        date,
-        time,
-        court,
-        duration,
-        sport,
-        slotId,
-      });
+slots.push({
+  facilityId: facility.id,
+  facilityName: facility.name,
+  date,
+  time,
+  court,
+  duration,
+  sport,
+  slotId,
+  bookingUrl: bookingUrl.toString(),
+});
     });
   });
 
